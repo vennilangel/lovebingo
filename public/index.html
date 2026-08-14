@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tazzu Bingo</title>
+<title>Couple's Bingo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -302,7 +302,7 @@
 <script>
 const API = '/api';
 const APP = document.getElementById('app');
-const LETTERS = ['T','A','Z','Z','U'];
+const LETTERS = ['E','L','I','T','A'];
 let myName = '';
 let myId = '';
 let roomCode = '';
@@ -364,7 +364,7 @@ function lettersRowHtml(struckCount){
 function renderJoin(errorMsg){
   stopPoll();
   APP.innerHTML = `
-    <h1>${heartIcon()}Tazzu <span class="accent">Bingo</span></h1>
+    <h1>${heartIcon()}Couple's <span class="accent">Bingo</span></h1>
     <div class="sub">A sweet little 5×5 bingo, just for the two of you</div>
     <div class="divider"></div>
     <input id="nameInput" placeholder="Your name" maxlength="14" />
@@ -508,114 +508,4 @@ function renderPlaying(room){
     const box = document.getElementById('timerBox');
     if(box){
       box.textContent = Math.max(left,0)+'s';
-      box.classList.toggle('low', left<=5);
-    }
-    if(left<=0 && myTurn && !localAutoCallDone){
-      localAutoCallDone = true;
-      autoCall();
-    }
-  },300);
-}
-
-async function callNumber(n){
-  try { await api(`/rooms/${roomCode}/call`, 'POST', { playerId: myId, number: n }); }
-  catch(e) { /* ignore race - poll will resync */ }
-}
-
-async function autoCall(){
-  const remaining = [];
-  const res = await fetch(`${API}/rooms/${roomCode}?playerId=${myId}`);
-  const { room } = await res.json();
-  for(let i=1;i<=25;i++) if(!room.calledNumbers.includes(i)) remaining.push(i);
-  if(remaining.length===0) return;
-  const pick = remaining[Math.floor(Math.random()*remaining.length)];
-  await callNumber(pick);
-}
-
-function confettiHtml(){
-  const dur = () => (2 + Math.random()*1.4);
-  let html = '';
-  for(let i=0;i<20;i++){
-    const left = Math.random()*100;
-    const delay = Math.random()*0.6;
-    html += `<span style="left:${left}%; animation-delay:${delay}s; animation-duration:${dur()}s; color:${Math.random()>0.5?'var(--rose)':'var(--gold)'};">&#10084;</span>`;
-  }
-  return html;
-}
-
-// Given the winner's own board and winLines (array of [r,c]-pair lines),
-// figure out every grid index to highlight across all matched lines.
-function analyzeWinLines(winLines){
-  const winCells = new Set();
-  (winLines || []).forEach(line => {
-    line.forEach(([r,c]) => winCells.add(r*5 + c));
-  });
-  return { winCells };
-}
-
-function renderFinished(room){
-  if(timerInterval) clearInterval(timerInterval);
-  const winner = room.players.find(p=>p.id===room.winner);
-  const iWon = room.winner === myId;
-  const title = iWon ? 'You Won!' : (winner ? winner.name + ' Won!' : 'Game Over');
-  const sub = iWon ? 'TAZZU complete — 5 matches, well played' : "Your partner matched all 5 — this round's theirs";
-  const { winCells } = analyzeWinLines(room.winLines);
-  const matchCount = Math.min((room.progress && room.progress[room.winner]) || 5, 5);
-
-  APP.innerHTML = `
-    <div class="winner-wrap">
-      <div class="confetti">${confettiHtml()}</div>
-      <div class="winner-badge">${heartIcon()}</div>
-      <div class="winner-eyebrow">Tazzu — 5 matches</div>
-      <div class="winner-banner">${title}</div>
-      <div class="winner-sub">${sub}</div>
-      <div class="board-frame"><div class="board-inner">
-        <div class="letters-row">${lettersRowHtml(matchCount)}</div>
-        <div class="grid" id="grid"></div>
-      </div></div>
-      <button class="btn-main" id="againBtn" style="margin-top:18px;">Play Again</button>
-    </div>
-  `;
-  drawGrid(room.calledNumbers, { interactive:false, winCells });
-  document.getElementById('againBtn').onclick = async () => {
-    await api(`/rooms/${roomCode}/reset`, 'POST', { playerId: myId });
-    myBoardNums = genBoard();
-    await api(`/rooms/${roomCode}/board`, 'POST', { playerId: myId, board: myBoardNums });
-  };
-}
-
-function startPoll(){
-  stopPoll();
-  pollHandle = setInterval(tick, 1200);
-  tick();
-}
-function stopPoll(){
-  if(pollHandle){ clearInterval(pollHandle); pollHandle = null; }
-  if(timerInterval){ clearInterval(timerInterval); timerInterval = null; }
-}
-async function tick(){
-  let room;
-  try {
-    const res = await fetch(`${API}/rooms/${roomCode}?playerId=${myId}`);
-    if(!res.ok) return;
-    const data = await res.json();
-    room = data.room;
-    if(room.myBoard) myBoardNums = room.myBoard;
-  } catch(e){ return; }
-
-  if(room.status === 'waiting'){
-    if(room.players.length >= 2) renderArrange(room);
-    else renderWaiting(room);
-  } else if(room.status === 'arranging'){
-    renderArrange(room);
-  } else if(room.status === 'playing'){
-    renderPlaying(room);
-  } else if(room.status === 'finished'){
-    renderFinished(room);
-  }
-}
-
-renderJoin();
-</script>
-</body>
-</html>
+      box.clas
