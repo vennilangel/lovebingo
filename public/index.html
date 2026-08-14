@@ -558,7 +558,7 @@ function renderFinished(room){
   const winner = room.players.find(p=>p.id===room.winner);
   const iWon = room.winner === myId;
   const title = iWon ? 'You Won!' : (winner ? winner.name + ' Won!' : 'Game Over');
-  const sub = iWon ? 'TAZZU complete — 5 matches, well played' : "Your partner matched all 5 — this round's theirs";
+  const sub = iWon ? 'ELITA complete — 5 matches, well played' : "Your partner matched all 5 — this round's theirs";
   const { winCells } = analyzeWinLines(room.winLines);
   const matchCount = Math.min((room.progress && room.progress[room.winner]) || 5, 5);
 
